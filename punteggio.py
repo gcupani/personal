@@ -22,7 +22,7 @@ def initialize():
     ))
 initialize()
 
-def calcola(name, surname, periods):
+def calcola(name, periods):
     points = 0
     days, months, exc, years = 0, 0, 0, 0
     #name, surname = sys.argv[1:3]
@@ -75,7 +75,7 @@ def calcola(name, surname, periods):
 
 
 
-    print('%s %s ha guadagnato %i punti!' % (name, surname, points))
+    print('%s ha guadagnato %i punti!' % (name, points))
     print('\nGiorni di servizio:     %3i' % days)
     if years > 0:
         print('Anni a punteggio pieno:  %2i  × 12 =%3i +' % (years, 12*years))
