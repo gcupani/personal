@@ -1,12 +1,9 @@
+from copy import deepcopy as dc
 from datetime import date, timedelta
 from dateutil import parser
 from dateutil.relativedelta import relativedelta as rd
-from copy import deepcopy as dc
-import sys
-
-
-
 from IPython.display import HTML, Javascript, display
+import sys
 
 def initialize():
     display(HTML(
@@ -79,16 +76,16 @@ def calcola(name, surname, periods):
 
 
     print('%s %s ha guadagnato %i punti!' % (name, surname, points))
-    print(' Giorni di servizio:     %i' % days)
+    print('\nGiorni di servizio:     %3i' % days)
     if years > 0:
-        print(' Anni a punteggio pieno:  %2i  × 12 =%3i +' % (years, 12*years))
-        print(' Mesi aggiuntivi:         %2i  ×  2 = %2i +' % (months, 2*months))
-        print(' Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
+        print('Anni a punteggio pieno:  %2i  × 12 =%3i +' % (years, 12*years))
+        print('Mesi aggiuntivi:         %2i  ×  2 = %2i +' % (months, 2*months))
+        print('Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
     else:
-        print(' Mesi:                    %2i  ×  2 = %2i +' % (months, 2*months))
-        print(' Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
-    print('                                    ----')
-    print('                                     %2i' % points)
+        print('Mesi:                    %2i  ×  2 = %2i +' % (months, 2*months))
+        print('Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
+    print('                                   ----')
+    print('Totale:                             %2i' % points)
 
 
 
