@@ -1,3 +1,9 @@
+"""
+© Guido Cupani, 2021 – guido.cupani(at)gmail.com
+DISCLAIMER: Il software è offerto senza alcuna garanzia riguardo all'affidabilità e all'accuratezza dei risultati.
+Lo sviluppatore declina qualsiasi responsabilità derivante dal suo utilizzo da parte di terzi.
+"""
+
 from copy import deepcopy as dc
 from datetime import date, timedelta
 from dateutil import parser
@@ -6,6 +12,7 @@ from IPython.display import HTML, Javascript, display
 import sys
 
 def initialize():
+    # From https://stackoverflow.com/questions/54886701/how-to-code-restart-kernel-and-run-all-in-button-for-python-jupyter-notebook
     display(HTML(
         '''
             <script>
@@ -25,18 +32,10 @@ initialize()
 def calcola(name, periods):
     points = 0
     days, months, exc, years = 0, 0, 0, 0
-    #name, surname = sys.argv[1:3]
     dt = timedelta(0)
-    #s = date.fromisoformat(sys.argv[3].split(',')[0])
-    #s = date.fromisoformat(periods[0].split('-')[0].replace('/','-'))
     s = parser.parse(periods[0].split('-')[0])#, '%y/%m/%d')
-    #print(s)
-
-    #for i,a in enumerate(sys.argv[3:]):
-        #t1, t2 = date.fromisoformat(a.split(',')[0]),\
-        #         date.fromisoformat(a.split(',')[1])
+    
     for j, p in enumerate(periods):
-        #t1, t2 =  date.fromisoformat(p.split('-')[0].replace('/','-')),date.fromisoformat(p.split('-')[1].replace('/','-'))
         ps = p.split('-')
         t1, t2 = parser.parse(ps[0]), parser.parse(ps[1])
         if t2<t1:
@@ -56,7 +55,6 @@ def calcola(name, periods):
             else:
                 months += dtm
                 exc += dte
-            #if i<len(sys.argv[3:])-1:
             if j<len(p)-1:
                 dt = timedelta(0)
                 s = t1
@@ -73,8 +71,6 @@ def calcola(name, periods):
         months += dtm
         exc += dte
 
-
-
     print('%s ha guadagnato %i punti!' % (name, points))
     print('\nGiorni di servizio:     %3i' % days)
     if years > 0:
@@ -86,8 +82,5 @@ def calcola(name, periods):
         print('Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
     print('                                   ----')
     print('Totale:                             %2i' % points)
-
-
-
 
     return
