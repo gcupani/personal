@@ -30,57 +30,44 @@ def initialize():
 initialize()
 
 def calcola(name, periods):
-    points = 0
-    days, months, exc, years = 0, 0, 0, 0
-    dt = timedelta(0)
-    s = parser.parse(periods[0].split('-')[0])#, '%y/%m/%d')
     
+    # Accumula intervalli secondo l'anno scolastico
+    years = {}
     for j, p in enumerate(periods):
         ps = p.split('-')
-        t1, t2 = parser.parse(ps[0]), parser.parse(ps[1])
+        t1, t2 = parser.parse(ps[0], dayfirst=True), parser.parse(ps[1], dayfirst=True)
+        #print(t1, t2)
         if t2<t1:
             print("Le date %s non sono ordinate correttamente. Controllare." % p)
             return
         if t2.year-t1.year>1 or (t2.month>8 and t1.month<9):
             print("Le date %s non appartengono allo stesso anno scolastico. Controllare." % p)
             return
-        ey = s.year if s.month < 9 else s.year+1
-        if t1.year > ey or (t1.year == ey and t1.month > 8):
-            dtm, dte = dt.days//30, dt.days%30
-            add = min(dtm*2 + (dte>=16)*2, 12)
-            points += add
-            days += dt.days
-            if add >= 12:
-                years += 1
-            else:
-                months += dtm
-                exc += dte
-            if j<len(p)-1:
-                dt = timedelta(0)
-                s = t1
-        dt += t2-t1+timedelta(days=1)
+        #ey = s.year if s.month > 9 else s.year-1
+        
+        y = t1.year if t1.month >= 9 else t1.year-1
+        if y not in years:
+            years[y] = [(t1, t2)]
+        else:
+            years[y].append((t1, t2))    
+    years = dict(sorted(years.items(), key=lambda item: item[1]))    
+    
+    # Calcola il punteggio per ciascun anno scolastico
+    days, points = 0, 0
+    for y in years:
+        dt = timedelta(0)
+        for t1, t2 in years[y]:
+            dt += t2-t1+timedelta(days=1)
 
-    dtm, dte = dt.days//30, dt.days%30
-    add = min(dtm*2 + (dte>=16)*2, 12)
-    points += add
-
-    days += dt.days
-    if add >= 12:
-        years += 1
-    else:
-        months += dtm
-        exc += dte
+        if dt.days < 16:
+            p = 0
+        if dt.days > 16:
+            p = min(2+2*(dt.days-16)/30, 12)
+        days += dt.days
+        points += p
+        print("%i-%i: %3i giorni, %2i punti" % (y, y+1, dt.days, p))
+            
 
     print('%s ha guadagnato %i punti!' % (name, points))
-    print('\nGiorni di servizio:     %3i' % days)
-    if years > 0:
-        print('Anni a punteggio pieno:  %2i  × 12 =%3i +' % (years, 12*years))
-        print('Mesi aggiuntivi:         %2i  ×  2 = %2i +' % (months, 2*months))
-        print('Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
-    else:
-        print('Mesi:                    %2i  ×  2 = %2i +' % (months, 2*months))
-        print('Giorni aggiuntivi:       %2i %s 16 → %2i =' % (exc, ' <' if exc<16 else '>=', 0 if exc<16 else 2))
-    print('                                   ----')
-    print('Totale:                             %2i' % points)
 
     return
