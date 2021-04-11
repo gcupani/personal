@@ -36,11 +36,17 @@ def calcola(name, classes, periods, path=None):
     if path is not None:
         print("I periodi sono importati dal file %s." % path)
         df = read_excel(path)
-        t1, t2, c = df['Unnamed: 2'], df['Unnamed: 3'], df['Table 1']
+        try:
+            t1, t2, c = df['Unnamed: 2'], df['Unnamed: 3'], df['Table 1']
+        except:
+            t1, t2, c = df['Unnamed: 2'], df['Unnamed: 3'], df['Tabella 1']
         periods = []
         for i in range(1,len(df)):
-            periods.append("%2i/%02i/%2i-%2i/%02i/%2i,%s" \
-                           % (t1[i].day, t1[i].month, t1[i].year, t2[i].day, t2[i].month, t2[i].year, c[i]))
+            if not t1.isna()[i]:
+                periods.append("%2i/%02i/%2i-%2i/%02i/%2i,%s" \
+                               % (t1[i].day, t1[i].month, t1[i].year, t2[i].day, t2[i].month, t2[i].year, c[i]))
+                if c[i] not in classes:
+                    classes.append(c[i])
         
     
     # Accumula intervalli secondo l'anno scolastico
@@ -95,11 +101,11 @@ def calcola(name, classes, periods, path=None):
     days = {c: 0 for c in classes}
     points = {c: 0 for c in classes}
     
-    print('┌'+'─'*11+('┬'+'─'*15)*len(classes)+'┐')
+    print('┌'+'─'*11+('┬'+'─'*17)*len(classes)+'┐')
     print("│ Anno     ", end=' │ ') 
     for c in classes:
-        print("%s         " % c, end=' │ ')
-    print('\n├'+'─'*11+('┼'+'─'*15)*len(classes)+'┤')        
+        print("%s           " % c, end=' │ ')
+    print('\n├'+'─'*11+('┼'+'─'*17)*len(classes)+'┤')        
         
     for y in years:
         #dt = timedelta(0)
@@ -109,22 +115,23 @@ def calcola(name, classes, periods, path=None):
             dt[c] += t2-t1+timedelta(days=1)
         for c0 in classes:
             if dt[c0].days > 16:
+                p_add = min(1+1*(dt[c0].days-16)//30, 6)
+                p[c0] = min(p[c0]+2*p_add, 12)
                 for c1 in classes: 
-                    p[c1] = min(p[c1]+1+(dt[c0].days-16)//30, 12)
-                    if c1 == c0:
-                        p[c1] = min(p[c1]+1+(dt[c0].days-16)//30, 12)
+                    if c1 != c0:
+                        p[c1] = min(p[c1]+p_add, 12)
         print("│ %i-%i" % (y, y+1), end=' │ ') 
         for c in classes:
             days[c] += dt[c].days
             points[c] += p[c]
-            print("%3i gg, %2i pp" % (dt[c].days, p[c]), end=' │ ')
+            print("%4i gg, %3i pp" % (dt[c].days, p[c]), end=' │ ')
         print("")
     
-    print('├'+'─'*11+('┼'+'─'*15)*len(classes)+'┤')         
+    print('├'+'─'*11+('┼'+'─'*17)*len(classes)+'┤')         
     print("│ Totale   ", end=' │ ')
     for c in classes:
-        print("%3i gg, %2i pp" % (days[c], points[c]), end=' │ ')
-    print('\n└'+'─'*11+('┴'+'─'*15)*len(classes)+'┘')        
+        print("%4i gg, %3i pp" % (days[c], points[c]), end=' │ ')
+    print('\n└'+'─'*11+('┴'+'─'*17)*len(classes)+'┘')        
 
 
 
